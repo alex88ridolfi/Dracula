@@ -7,8 +7,7 @@ Paper with description of concepts is now online: https://arxiv.org/abs/1802.072
 
 ### Instructions (which assume familiarity with TEMPO)
 
-Small change to TEMPO:
--
+1) Small change to TEMPO:
 
 To run dracula, you need to use the TEMPO package. To run smoothly, you will need to make a small chage to the way TEMPO writes its output. 
 
@@ -28,8 +27,7 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 > chmod u+x dracula.sh
 
-Preparation:
--
+2) Preparation:
 
 * You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script.
   
@@ -49,8 +47,7 @@ If your dataset allows it, then you can proceed like this until all TOAs are con
 
 If, on the other hand, during the phase connection effort you reach a stage where, for all unconnected gaps between (connected) TOA sets, you have multiple values on N giving acceptable fits, you have only ambiguous gaps left: in this case you cannot proceed with manual connection. Then you need to use one of the scripts below.
 
-First script: sieve.sh
--
+### First script: sieve.sh
 
 This is an earlier, now obsolete version of the phase connecting script. This is mostly here for reference, since this was described and used by Freire & Ridolfi (2018). Also, some of the details are important for understanding how dracula.sh works.
 
@@ -101,8 +98,7 @@ You might find that normally early on you have relatively few 'acceptable' solut
 
 You might also find that somewhere along the way you need to start fitting an additional parameter in order to keep getting any acceptable solutions. That's simply an edit of your starting parfile.
 
-Second script: dracula.sh
--
+### Second script: dracula.sh
 
 Using the previous script is a good idea if the number of possible solutions is a few thousands. If it is millions instead, then you have a problem. 
 Also, using the previous script requires a lot of iterative editing of the timfile and the sieve script. 
