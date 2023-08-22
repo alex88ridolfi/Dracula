@@ -7,9 +7,9 @@ chi2_threshold="2.0"
 
 # ***** specify version of TEMPO we're using
 #       a) path to $TEMPO directory, which contains tempo.cfg, obsys.dat, etc.
-TEMPO=/homes/pfreire/tempo_M2/tempo
+TEMPO=/homes/pfreire/tempo
 #       b) path to tempo executable
-alias tempo=$TEMPO/tempo_m2
+alias tempo=$TEMPO/tempo
 
 # ***** Specify where we are--this is the directory where we want to write our results.
 #       Default the directory where script is. This directory must contain the ephemeris, TOA list and acc_WRAPs.dat
@@ -34,6 +34,34 @@ address=pfreire@mpifr-bonn.mpg.de
 #                In that case, just make one containing 3 zeros in a line.
 
 ##########################  YOU SHOULD NOT NEED TO EDIT BEYOND THIS LINE  ########################## 
+
+# Remove solutions from previous runs (necessary to avoid confusion)
+
+rm -rf solution* list_solutions.dat
+
+# Let's see about acc_WRAPs.dat
+
+# Count the lines in acc_WRAPs.dat
+n=`ls acc_WRAPs.dat | wc -l`
+
+echo
+
+if [ "$n" -eq "0" ]
+  then
+     rm -rf acc_WRAPs.dat
+     echo 0 0 0 > acc_WRAPs.dat
+     echo "Starting from scratch!"
+  else
+     echo "Starting from pre-existing list of solutions."
+     echo "This only works if you have named additional gaps in the previous timfile with GAP tags"
+     echo "(for current list of tags, see file gaps.txt)."
+     echo "If you changed your time file significantly, or have changed the positions of the tags, this won't work either, and you should start from scratch."
+     echo "If you want to start from scratch, stop script and delete file acc_WRAPs.dat"
+  fi
+
+echo
+
+sleep 5;
 
 # Make sorted file with list of gaps
 grep GAP $timfile | awk '{print $2}' | sort > gaps.txt
@@ -221,7 +249,7 @@ do
 	    if [ "$i" -eq "$n_gaps" ]
 	    then
 		echo Full solution found! $acc_combination, $min : chi2 = $chi2
-		echo $acc_combination $min $chi2 $chi2_prev > $basedir/solution_$l.$min.dat
+		echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
 		cp $rephem $basedir/solution_$l.$min.par
 		# Let user know a solution has been found
 		cat $rephem | mail -s "Solution found" $address
@@ -256,7 +284,7 @@ do
 		if [ "$i" -eq "$n_gaps" ]
 		then
 		    echo Full solution found! $acc_combination, $z : chi2 = $chi2
-		    echo $acc_combination $z $chi2 $chi2_prev > $basedir/solution_$l.$z.dat
+		    echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
 		    cp $rephem $basedir/solution_$l.$z.par
 		    # Let user know a solution has been found
 		    cat $rephem | mail -s "Solution found" $address
@@ -293,7 +321,7 @@ do
 		if [ "$i" -eq "$n_gaps" ]
 		then
 		    echo Full solution found! $acc_combination, $z : chi2 = $chi2
-		    echo $acc_combination $z $chi2 $chi2_prev > $basedir/solution_$l.$z.dat
+		    echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
 		    cp $rephem $basedir/solution_$l.$z.par
 		    # Let user know a solution has been found
 		    cat $rephem | mail -s "Solution found" $address
@@ -337,15 +365,24 @@ cd $basedir
 
 # At this stage, acc_WRAPs.dat should be empty. What we can do is to make a new one from the solution(s) found, in order to continue work
 # Either with extra gap tags in same data set, or with new ones around a new data set. 
-cat solution_*dat | awk '{print $(NF-1)" "$0}' | sort -n | cut -f2- -d' ' > acc_WRAPs.dat
+
+# First, we make a sorted list of solution
+
+cat solution_*dat | awk '{print $(NF-2)" "$0}' | sort -n | cut -f2- -d' ' > list_solutions.dat
+
+# Second, chop off the last column to make the new acc_WRAPs.dat
+
+awk '{NF--; print}' list_solutions.dat > acc_WRAPs.dat
+
+# Make list of solutions with pointers to solutions written
 
 # cd report on what's been done
+
 
 echo Made a total of $t trials
 echo Of those, a total of $l unique solutions had reduced chi2s smaller than $chi2_threshold,
 echo  which for that were stored and processed further.
-echo Found $s solutions
-echo WARNING: IF THE NUMBER OF SOLUTIONS IS ZERO, YOU HAVE TO RE-MAKE YOUR acc_WRAPs.dat FILE!
+echo Found $s solutions.
 echo Started $start
 echo Ended $end
 
