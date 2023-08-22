@@ -7,7 +7,7 @@ Paper with description of concepts is now online: https://arxiv.org/abs/1802.072
 
 Although the example is for an isolated pulsar, the script works for binaries as well. The assumption is that the parameters in the starting solution are actually able to describe the full timing solution. 
 
-NOTE: The example pulsar (47 Tuc AA) was later found to have exactly twice the spin period! However, this does not change anything whatsoever in the timing solution, except for the fact that P-dot should also then be twice as large, and that the TOA list should be updated.
+NOTE: The example pulsar (47 Tuc AA) was later found to have exactly twice the spin period! However, this does not change anything whatsoever in the validity of the timing solution, except for the fact that P-dot should also then be twice as large, and that the TOA list should be updated. It also does not change anything in the way the solution is derived.
 
 ### Instructions (which assume familiarity with TEMPO)
 
