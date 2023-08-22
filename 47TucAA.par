@@ -9,6 +9,6 @@ F1 0 1
 PEPOCH          51600 
 DM               24.971
 EPHEM               DE421
-CLK                 UTC(NIST)                       
+CLK                 UNCORR                       
 UNITS               TDB
 NITS 2 
