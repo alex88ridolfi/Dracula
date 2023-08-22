@@ -23,11 +23,11 @@ This can be edited easily in your tempo source code. In a file called newval.f, 
 
 Replace the f15.9 with f15.4, and compile tempo. We don't need a very high precision in the chi2, but we need to be able to print very large values.
 
-* Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. If you're starting from scratch, make a file called acc_WRAPs.dat containing three zeros in sequence, with spaces between them. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
+2) Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. If you're starting from scratch, make a file called acc_WRAPs.dat containing three zeros in sequence, with spaces between them. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
 
 > chmod u+x dracula.sh
 
-2) Preparation:
+3) Preparation:
 
 * You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script.
   
@@ -41,7 +41,7 @@ Beware of groups of TOAs close to rotational phase 0.5, some of those can appear
 
 If necessary, put an EFAC in your timfile such that this step also results in a reduced chi-squared (henceforce "chi2") of ~1.
 
-Epochs can be joined together by removing JUMPs from the timfile. Try doing this between nearby epochs, by removing two successive JUMP statements and inserting a "PHASE N" (where N is some integer number of phase wraps) between them. Some value of N (maybe 0) will hopefully result in a chi2 ~1. If changing N by +/-1 should give a chi2 that is considerably larger than 1, then you have an unambiguous connection, i.e., you connected that gap. In this case, move to another gap where you feel you can now get an unambiguous solution.
+* Epochs can be joined together by removing JUMPs from the timfile. Try doing this between nearby epochs, by removing two successive JUMP statements and inserting a "PHASE N" (where N is some integer number of phase wraps) between them. Some value of N (maybe 0) will hopefully result in a chi2 ~1. If changing N by +/-1 should give a chi2 that is considerably larger than 1, then you have an unambiguous connection, i.e., you connected that gap. In this case, move to another gap where you feel you can now get an unambiguous solution.
 
 If your dataset allows it, then you can proceed like this until all TOAs are connected. In that case, you have determined the full phase connection for the pulsar!
 
@@ -148,7 +148,7 @@ JUMP
 
 This is necessary for the scipt to start.
 
-IMPORTANT: as in sieve.sh, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a face TOA, or a copy of the first or last TOAs.
+IMPORTANT: as in sieve.sh, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, or a copy of the first or last TOAs.
 
 After that, enter your TEMPO, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. If you're continuing work from sieve.sh, please change the file with the TOAs, as shown above.
 
