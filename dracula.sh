@@ -249,7 +249,7 @@ do
 	    if [ "$i" -eq "$n_gaps" ]
 	    then
 		echo Full solution found! $acc_combination, $min : chi2 = $chi2
-		echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
+		echo $acc_combination $z $chi2 $chi2_prev solution_$l.$min.par > $basedir/solution_$l.$min.dat
 		cp $rephem $basedir/solution_$l.$min.par
 		# Let user know a solution has been found
 		cat $rephem | mail -s "Solution found" $address
