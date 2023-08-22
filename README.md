@@ -27,19 +27,17 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 > chmod u+x dracula.sh
 
-3) Preparation:
+3) Preparation: try finding the timing solution manually!
 
 * You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script.
   
-In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par)
+* In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par). This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
 
-This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
+* In the timfile: Place JUMPs around every epoch (each comprising of a group of TOAs) except one. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
 
-In the timfile: Place JUMPs around every epoch (each comprising of a group of TOAs) except one. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
+* Beware of groups of TOAs close to rotational phase 0.5, some of those can appear at rotational phase -0.5. In that case TEMPO is assuming the wrong rotation count, whenever it happens it cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements, as I do in the example timfiles.
 
-Beware of groups of TOAs close to rotational phase 0.5, some of those can appear at rotational phase -0.5. In that case TEMPO is assuming the wrong rotation count, whenever it happens it cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements, as I do in the example timfiles.
-
-If necessary, put an EFAC in your timfile such that this step also results in a reduced chi-squared (henceforce "chi2") of ~1.
+* If necessary, put an EFAC in your timfile such that this step also results in a reduced chi-squared (henceforce "chi2") of ~1.
 
 * Epochs can be joined together by removing JUMPs from the timfile. Try doing this between nearby epochs, by removing two successive JUMP statements and inserting a "PHASE N" (where N is some integer number of phase wraps) between them. Some value of N (maybe 0) will hopefully result in a chi2 ~1. If changing N by +/-1 should give a chi2 that is considerably larger than 1, then you have an unambiguous connection, i.e., you connected that gap. In this case, move to another gap where you feel you can now get an unambiguous solution.
 
