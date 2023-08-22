@@ -164,10 +164,11 @@ The file list_solutions.dat will have a list of all solutions - rotation numbers
 
 The file acc_WRAPs.dat will be very much the same as list_solutions.dat, only without the last column. This allows you to continue your work if you have additional gaps between TOAs data sets that have not yet been tagged.
 
+The improvement of dracula relative to sieve.sh was already described in Freire & Ridolfi (2018), in the last paragraph of section 4.3, the delay in the implementation has to do with the fact that only in 2021 did a really simple implementation occur to me.
+
 ### Advantages of dracula.sh
 
 The dracula.sh routine is superior to sieve.sh, and should preferably be used:
-
 - The writing is simpler, more transparent, and overall the script is easier to follow. Part of this is because of the improved logic, and in particular the use of trial.tim as an intermediate file, and the use of gaps.txt as a support file.
 - As noted before, it is automatic, very little manual intervention is needed. For each solution, the script not only changes the C GAPX into PHASE +N statements, but it also comments out the JUMP statements around it as required by the partial solution being examined. For this, the use of the intermediate file (trial.tim) is very useful. 
 - However, the more important improvement, which is pretty fundamental, is to always prioritize the partial solutions with the lowest reduced chi2, no matter how many gaps they connect. This means that we always get to the timing solution faster (and sometimes _much_ faster) than with sieve.sh, where we must calculate all solutions for each new gap first before moving to the next gap.
@@ -175,7 +176,6 @@ The dracula.sh routine is superior to sieve.sh, and should preferably be used:
 Indeed, if you run this script with 47TucAA.tim and 47TucAA.par, you should see the solution emerge in the 46th cycle (i.e., resulting from the processing of the 45th partial solution for which it tries to connect one extra gap), not after more than 400 cycles.
 
 Some notes about the usage of dracula.sh (and some exercises you can do with 47TucAA.tim, to improve familiarity with the script):
-- The improvement of dracula relative to sieve.sh was already described in Freire & Ridolfi (2018), in the last paragraph of section 4.3, the delay in the implementation has to do with the fact that only in 2021 did a really simple implementation occur to me.
 - Note that after determining the solution, the script will keep running. This will determine whether the solution reported is unique or not. In the case of 47 Tuc AA, this is the case.
 - If it is not unique, then that means you need to tag additional gaps between TOA groups and continue the computation by calling the script again; this will automatically use the acc_WRAPs.dat that now contains the solution(s) found from previous work. You can also do this to check automatically that the solution you obtained, even if unique, stays in fact unique (or within your chi2 threshold) for the remainder of the gaps. Try doing this with 47TucAA.tim.
 - This means that, if you choose to do so, you can use dracula.sh as you use sieve.sh: by tagging new gaps progressively (you choose how many at a time), and retaining the file with the solutions for those gaps (acc_WRAPs.dat) as a starting point for the subsequent calculations.
