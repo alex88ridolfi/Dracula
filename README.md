@@ -214,7 +214,7 @@ Updates and instructions by Paulo Freire, based on initial description by Erik M
 
 - July 29 2021: By popular request, I posted TEMPO patch that allows it to print very large values of reduced chi2 (see below in the first stage of the instructions). IMPORTANT: YOU NEED TO DO THIS CHANGE IN ORDER FOR THE EXAMPLE BELOW TO WORK!
 
-- Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, see below. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
+- Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
  
 ### Pulsars that have been connected with sieve.sh and dracula.sh (in refereed literature, more unpublished):
 
