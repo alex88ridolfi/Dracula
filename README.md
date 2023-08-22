@@ -225,3 +225,5 @@ Updates and instructions by Paulo Freire, based on initial description by Erik M
 - PSR J1536-4948, a gamma-ray MSP (Bhattacharyya et al. 2021, accepted for publication in ApJ, arXiv: 2102:04026v1)
 - PSRs J0921-5202, J1146-6610 and J1546-5925. The latter was already solved with the automatic dracula.sh script (Lorimer et al. 2021, arXiv:2108.03946)
 - PSR J2338+4818, a wide pulsar - massive WD system found with FAST (Cruces et al. 2021, arXiv:2108.09121)
+- So many now that I have lost track (see [
+](https://ui.adsabs.harvard.edu/abs/2018MNRAS.476.4794F/citations)https://ui.adsabs.harvard.edu/abs/2018MNRAS.476.4794F/citations).
