@@ -5,29 +5,37 @@ Code written by Paulo Freire.
 
 Paper with description of concepts is now online: https://arxiv.org/abs/1802.07211
 
-Updates and instructions by Paulo Freire, based on initial description by Erik Madsen.
-
-Major updates
-
-- Oct. 10. 2020: The automatic version of sieve.sh, dracula.sh !
-
-- Oct. 23: new version of dracula.sh that does far fewer sorts when we have longs lists of partial solutions, saves results of processing in the occasions when it sorts, and e-mails user when it finds a solution.
-
-- Oct. 29: new version that lets user know about new solution immediately after it is computed, not later when its chi2 is sorted.
-
-- Oct. 31: improved description, functionality, added "usage" below.
-
-- Jan. 19 2021: changed gap names from JUMPX to GAPX. This allows automatic building of list of gap names from TOA list, without needing to specify it independently in the script.
-
-- March 2 2021: Added list of published pulsars that have been connected using this software (see at the end).
-
-- July 29 2021: By popular request, I posted TEMPO patch that allows it to print very large values of reduced chi2 (see below in 'known issues'). IMPORTANT: YOU NEED TO DO THIS CHANGE IN ORDER FOR THE EXAMPLE BELOW TO WORK!
-
 ### Instructions (which assume familiarity with TEMPO)
+
+* Small change to TEMPO
+
+To run dracula, you need to use the TEMPO package. To run smoothly, you will need to make a small chage to the way TEMPO writes its output. 
+
+The change is the following: if the value of chi2 is very large (10000 or more), tempo.lis just writes it as a bunch of asterisks. This confuses Dracula's parsing of tempo.lis and can make you miss timing solutions.
+
+This can be edited easily in your tempo source code. In a file called newval.f, there is a sequence of lines that read:
+  
+  1108	  format(' Chisqr/nfree: ',f9.2,'/',i5,' = ',f15.9,
+
+  1109	  format(' Chisqr/nfree: ',f10.2,'/',i5,' = ',f15.9,
+
+  1110	  format(' Chisqr/nfree: ',f11.2,'/',i5,' = ',f15.9,
+
+Replace the f15.9 with f15.4, and compile tempo. We don't need a very high precision in the chi2, but we need to be able to print very large values.
+
+* Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. If you're starting from scratch, make a file called acc_WRAPs.dat containing three zeros in sequence, with spaces between them. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
+
+> chmod u+x dracula.sh
 
 Preparation:
 
-You should have an initial ephemeris (parfile) and set of TOAs (timfile). Place JUMPs around every epoch (each comprising of a group of TOAs) except one. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
+* You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script.
+  
+In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par)
+
+This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
+
+In the timfile: Place JUMPs around every epoch (each comprising of a group of TOAs) except one. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
 
 Beware of groups of TOAs close to rotational phase 0.5, some of those can appear at rotational phase -0.5. In that case TEMPO is assuming the wrong rotation count, whenever it happens it cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements, as I do in the example timfiles.
 
@@ -76,7 +84,11 @@ JUMP
 
 ...
 
-Run the script. This will find all the acceptable integers for the gap tagged with PHASEA. These are written in file WRAPs.dat, which that tabulates the chi2 for each of these combinations. These are then automatically sorted into a new acc_WRAPs.dat file (the starting acc_WRAPs.dat file, generated automatically and consisting of a single 0). This acc_WRAPs.dat file is copied to acc_WRAPs_A.dat as a record.
+Run the script.
+
+> ./sieve.sh
+
+This will find all the acceptable integers for the gap tagged with PHASEA. These are written in file WRAPs.dat, which that tabulates the chi2 for each of these combinations. These are then automatically sorted into a new acc_WRAPs.dat file (the starting acc_WRAPs.dat file, generated automatically and consisting of a single 0). This acc_WRAPs.dat file is copied to acc_WRAPs_A.dat as a record.
 
 Now, in the TOA file, include the tag PHASEB in the nest shortest gap, commenting out the JUMPs around it. Then edit sieve.sh, with prev_labels="0 A" and next_label="B". Run sieve.sh again. Every acceptable combination of PHASEA that was in your acc_WRAPs.dat file will be tested along with a range of PHASEB values. These are determined by finding the minimum of the chi2 parabola in each case. The resulting list of acceptable solutions is sorted into a new version of file acc_WRAPs.dat (this is copied automatically to acc_WRAPs_B.dat).
 
@@ -89,8 +101,7 @@ You might also find that somewhere along the way you need to start fitting an ad
 ******* Second script: dracula.sh *******
 
 Using the previous script is a good idea if the number of possible solutions is a few thousands. If it is millions instead, then you have a problem. 
-Also, using the previous script requires some manual operation. 
-
+Also, using the previous script requires a lot of iterative editing of the timfile and the sieve script. 
 
 To do things automatically, you can use instead dracula.sh. To use this, you have to edit the tags of all the gaps between groups of TOAs in advance in your .tim file, or at least a few of them, as I did in file 47TucAA.tim. The syntax here is slightly different than in sieve.sh. The example above is written as:
 
@@ -135,13 +146,25 @@ C GAP0
 
 JUMP
 
-This is necessary for the script to start processing the first line in acc_WRAPs.dat, WHICH YOU MUST HAVE, otherwise the scripts does not start. If you don't have a previous acc_WRAPs.dat file, just make one with three zeros separated by spaces. If you use zero as the first number, all solutions (whether made by sieve.sh or dracula.sh) will start with a zero.
+This is necessary for the scipt to start.
 
 IMPORTANT: as in sieve.sh, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a face TOA, or a copy of the first or last TOAs.
 
 After that, enter your TEMPO, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. If you're continuing work from sieve.sh, please change the file with the TOAs, as shown above.
 
-Then, finally, make it run, by simply calling the script! The timing solution(s) will appear in your base working directory as solution_n.m.par, where n and m are two unique integers that tell you in which cycle was the solution found.
+Then, finally, make it run, by simply calling the script!
+
+> ./dracula.sh
+
+The acceptable timing solution(s) will appear in your base working directory as solution_n.m.par, where n and m are two unique integers that tell you in which cycle was the solution found.
+
+The corresponding file solution_n.m.par lists the rotation numbers and the reduced chi2 of the solutions, in the third column from the end. The last column is the name of the corresponding solution_n.m.par.
+
+The file list_solutions.dat will have a list of all solutions - rotation numbers, reduced chi2 of the solutions, and the names of the corresponding timing solution.
+
+The file acc_WRAPs.dat will be very much the same as list_solutions.dat, only without the last column. This allows you to continue your work if you have additional gaps between TOAs data sets that have not yet been tagged.
+
+******* Advantages of dracula.sh *******
 
 The dracula.sh routine is superior to sieve.sh, and should preferably be used:
 
@@ -153,7 +176,7 @@ Indeed, if you run this script with 47TucAA.tim and 47TucAA.par, you should see 
 
 Some notes about the usage of dracula.sh (and some exercises you can do with 47TucAA.tim, to improve familiarity with the script):
 
-- The improvement of dracula relative to sieve.sh was already described in Freire & Ridolfi (2018), in the last paragraph of section 4.3, the delay in the implementation has to do with the fact that only now did a really simple implementation occur to me.
+- The improvement of dracula relative to sieve.sh was already described in Freire & Ridolfi (2018), in the last paragraph of section 4.3, the delay in the implementation has to do with the fact that only in 2021 did a really simple implementation occur to me.
 - You don't need to tag all the gaps between TOAs in advance, just enough that you think you might get a unique solution. The file 47TucAA.tim is an example of this. After finding the unique solution for 47 Tuc AA, you can keep connecting manually (i.e., by editing PHASE +N statements for each additional gap betwen TOA groups) in order to verify that the connection is now unambiguous for all the remaining gaps, and chek whether it stays within your chi2 limit or not - and if not, whether fitting any additional parameters helps.
    - NOTE: If you start this manual work with the post-fit solution(s) that appears in $basedir with the name solution_n.m.par, then all previously connected gap tags and JUMP statements around them have to be deleted (or commented out) in the .tim file, because those rotation numbers are already taken into account by solution_n.m.par. One of the advantages of this is that if you set NITS to 1 in that solution, you can see the pre-fit residuals for all TOAs. This gives you a good idea of how good that solution really is at predicting TOAs. Also, starting from this new solution results in much smaller PHASE numbers for all remaining gaps. In the case of 47TucAA.tim, those should all be 0.
 - Note that after determining the solution, the script will keep running. This will determine whether the solution reported is unique or not. In the case of 47 Tuc AA, this is the case.
@@ -163,40 +186,35 @@ Some notes about the usage of dracula.sh (and some exercises you can do with 47T
 - This progressive usage also has the benefit that you can probe which gaps give you fewer new solutions; generally these are the shorter ones in time, or the ones that are adjacent to a group that is already partially connected. If a new gap gives you way too many solutions, don't worry: just stop the script, put its tag in some other gap, and re-start.
 
 
-### Usage
-
-* Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. If you're starting from scratch, make a file called acc_WRAPs.dat containing three zeros in sequence, with spaces between them. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
-
-> chmod u+x dracula.sh
-
-and then run it:
-
-> ./dracula.sh
-
 ### Known issues
-
-* chi2 can start to blow up to the point where tempo.lis just writes it as a bunch of asterisks, and this confuses the parsing of tempo.lis into sticking your directory listing into WRAPs.dat.
-
-  This can be edited easily in your tempo source code. In a file called newval.f, there is a sequence of lines that read:
-  
-  
-  1108	  format(' Chisqr/nfree: ',f9.2,'/',i5,' = ',f15.9,
-
-  1109	  format(' Chisqr/nfree: ',f10.2,'/',i5,' = ',f15.9,
-
-  1110	  format(' Chisqr/nfree: ',f11.2,'/',i5,' = ',f15.9,
-
-
-  Replace the f15.9 with f15.4, and compile tempo. We don't need a very high precision in the chi2, but we need to be able to print very large values.
-  
 
 * For sieve. sh there is some manual intervention in this process (editing in the PHASEA, PHASEB,... statements in the TOA list, editing the labels in sieve.sh). 
 This issue is avoided by the use of the dracula.sh script, unless one chooses to use it as sieve.sh, by naming more and more gaps.
 
-* The tempo runs waste most of the time repeating many steps, like consulting the Earth rotation tables, solar system ephemerides, etc, until we get to the stage where we have the precise vectors between the telescope at the time of the TOA and the Solar System Barycentre. All of that only needs to be run once. My next step will be to use PINT to do these calculations separately, or find a way of making reliable barycentric TOAs, and work with those.
+* Even without taking into account the rotation files, tempo still wastes a lot of time repeating many steps, like consulting the Earth rotation tables, solar system ephemerides, etc, until we get to the stage where we have the precise vectors between the telescope at the time of the TOA and the Solar System Barycentre. All of that should ideally run once. My next step will be to use PINT to do these calculations separately, or find a way of making reliable barycentric TOAs, and work with those.
 
 * (Erik Madsen): Personally, I'd have written it in Python, but to each their own!
 (Paulo Freire): why use python when very simple shell commands do so well??
+
+Updates and instructions by Paulo Freire, based on initial description by Erik Madsen.
+
+### Updates
+
+- Oct. 10 2020: The automatic version of sieve.sh, dracula.sh !
+
+- Oct. 23 2020: new version of dracula.sh that does far fewer sorts when we have longs lists of partial solutions, saves results of processing in the occasions when it sorts, and e-mails user when it finds a solution.
+
+- Oct. 29 2020: new version that lets user know about new solution immediately after it is computed, not later when its chi2 is sorted.
+
+- Oct. 31 2020: improved description, functionality, added "usage" below.
+
+- Jan. 19 2021: changed gap names from JUMPX to GAPX. This allows automatic building of list of gap names from TOA list, without needing to specify it independently in the script.
+
+- March 2 2021: Added list of published pulsars that have been connected using this software (see at the end).
+
+- July 29 2021: By popular request, I posted TEMPO patch that allows it to print very large values of reduced chi2 (see below in the first stage of the instructions). IMPORTANT: YOU NEED TO DO THIS CHANGE IN ORDER FOR THE EXAMPLE BELOW TO WORK!
+
+- Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, see below. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
  
 ### Pulsars that have been connected with sieve.sh and dracula.sh (in refereed literature, more unpublished):
 
