@@ -28,7 +28,7 @@ This can be edited easily in your tempo source code. In a file called newval.f, 
 
 Replace the f15.9 with f15.4, and compile tempo. We don't need a very high precision in the reduced chi2, but we need to be able to print very large values.
 
-2) Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. If you're starting from scratch, make a file called acc_WRAPs.dat containing three zeros in sequence, with spaces between them. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
+2) Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
 
 > chmod u+x dracula.sh
 
