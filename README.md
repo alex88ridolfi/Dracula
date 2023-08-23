@@ -34,7 +34,7 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 3) Preparation of solution and TOA file: try finding the timing solution manually!
 
-* You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script. In the best case, for each observation, you should have at least 3 TOAs.
+* You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
   
 * In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par). This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
 
@@ -44,9 +44,9 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 * If the post-fit residuals are flattened, put an EFAC in your timfile such that the reduced chi2 of the post-fit residuals is ~1.
 
-* Now, eveything is ready for the solution! TOAs from closely spaced observations can be joined together (``connected") by removing JUMPs. In the gap between groups of TOAs in nearby epochs, comment out two successive JUMP statements and insert a "PHASE N" (where N is some integer number of phase wraps, which should start with zero) between them, then run tempo. Repeat for integers around N. Hopefully, one of the values of N will result in a reduced chi2 of the post-fit residuals of ~1. In that case, if changing N by +/-1 yields a reduced chi2 that is considerably larger than 1, then N gives you an unambiguous correction to the _rotation number_ predicted by the solution. In this case you have connected that gap!
+* Now, eveything is ready for the solution! Groups of TOAs from closely spaced observations can now be joined together (``connected"). In the gap between those two groups, comment out two successive JUMP statements and insert a "PHASE N" (where N is some integer number of phase wraps, which should start with zero) between them, then run tempo. Repeat for integers around N. Hopefully, one of the values of N will result in a reduced chi2 of the post-fit residuals of ~1. In that case, if changing N by +/-1 yields a reduced chi2 that is considerably larger than 1, then N gives you an unambiguous correction to the _rotation number_ predicted by the solution. In this case you have connected that gap!
 
-* Move to the next narrow gap between nearby groups of TOAs and repeat the procedure.
+* Leave the PHASE +N statement in the previous gap at its optimal N value (reduced chi2 ~ 1) and move to the next narrow gap between nearby groups of TOAs and repeat the procedure.
 
 * If your dataset allows it, then you can proceed like this until all TOAs are connected. In that case, you have determined the full phase connection for the pulsar! If you want to use that solution with the original TOAs, please remove all the PHASE statements from your solution, since your new solution already predicts the correct rotation numbers.
 
