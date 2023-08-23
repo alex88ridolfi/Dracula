@@ -34,7 +34,7 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 3) Preparation of solution and TOA file: try finding the timing solution manually!
 
-* You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
+* You should have an initial ephemeris (parfile) and set of TOAs (timfile), preferably all produced with the same profile for each back-end/telescope. The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
   
 * In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par). This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
 
@@ -143,7 +143,7 @@ JUMP
 
 Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed.
 
-At the end, you must add a dummy tag, GAP0, also between JUMPs, which can be commented out:
+At the end, you must add a dummy tag, GAP0, also between JUMPs, which in this case can (should) be commented out:
 
 ...
 
@@ -155,7 +155,7 @@ C JUMP
 
 This is necessary for the script to start.
 
-IMPORTANT: as in sieve.sh, and in the manual connection before it, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, or a copy of the first or last TOAs.
+IMPORTANT: as in sieve.sh, and in the manual connection before it, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, a copy of the first or last TOAs, or a particulra data set that is too different from the others to allow phase connection.
 
 After that, edit the script itself: enter your TEMPO directory, the parth to the tempo executable, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. Edit too the chi2 threshold for acceptable solutions (bu defult this is 2.0). If you're continuing work from sieve.sh, please change the file with the TOAs, as shown above.
 
@@ -165,11 +165,11 @@ Then, finally, make it run, by simply calling the script!
 
 The acceptable timing solution(s) - i.e., those with a reduced chi2 smaller than the threshold you defined in the script - will appear in your base working directory as solution_n.m.par, where n and m are two unique integers that tell you in which cycle was the solution found.
 
-The corresponding file solution_n.m.par lists the rotation numbers and the reduced chi2 of the solutions, in the third column from the end. The last column is the name of the corresponding solution_n.m.par.
+The corresponding file solution_n.m.dat lists the rotation numbers and the reduced chi2 of that solution, in the third column from the end. The last column is the name of the name of the file containing the solution.
 
-The file list_solutions.dat will have a list of all solutions - rotation numbers, reduced chi2 of the solutions, and the names of the corresponding timing solution.
+The file list_solutions.dat will have a list of all allowed solutions - rotation numbers, reduced chi2 of the solutions, and the names of the corresponding timing solution. This is sorted by the chi2 of the solution (third column from last), i.e, from best to worse. If this file contains a single entry, that means that the solution needed is unique and you have found the correct timing solution.
 
-The file acc_WRAPs.dat will be very much the same as list_solutions.dat, only without the last column. This allows you to continue your work if you have additional gaps between TOAs data sets that have not yet been tagged.
+The file acc_WRAPs.dat will be very much the same as list_solutions.dat, only without the last column. This allows you to continue your work if you have additional gaps between TOAs data sets that have not yet been tagged. This can be used to filter solutions (if you have multiple) against new data, or to check that your single solution is capable of unambiguously connecting all subsequent gaps.
 
 The improvement of dracula relative to sieve.sh was already described in Freire & Ridolfi (2018), in the last paragraph of section 4.3, the delay in the implementation has to do with the fact that only in 2021 did a really simple implementation occur to me.
 
