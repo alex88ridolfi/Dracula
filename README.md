@@ -14,7 +14,7 @@ NOTE: The example pulsar (47 Tuc AA) was later found to have exactly twice the s
 
 1) Small change to TEMPO:
 
-To run dracula, you need to use the TEMPO package. To run smoothly, you will need to make a small chage to the way TEMPO writes its output. 
+To run dracula, you need to use the TEMPO package, and a way to visualize the TOA residuals. To run smoothly, you will need to make a small chage to the way TEMPO writes its output. 
 
 The change is the following: if the value of the reduced chi2 is very large (10000 or more), tempo.lis just writes it as a bunch of asterisks. This confuses Dracula's parsing of tempo.lis and can make you miss timing solutions.
 
@@ -32,7 +32,7 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 > chmod u+x dracula.sh
 
-3) Preparation: try finding the timing solution manually!
+3) Preparation of solution and TOA file: try finding the timing solution manually!
 
 * You should have an initial ephemeris (parfile) and set of TOAs (timfile). The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script. In the best case, for each observation, you should have at least 3 TOAs.
   
@@ -40,15 +40,17 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 * In the timfile: Place JUMPs around the sets of TOAs from individual observations, except one. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
 
-* If not, please beware of groups of TOAs close to rotational phase 0.5 or -0.5, some might appear wrapped (i.e., almost one full rotation away from the other TOAs in the same group). In that case TEMPO cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements, so that all TOAs in the group are either near 0.5 or -0.5, as I do in the example timfiles.
+* If not, please beware of groups of TOAs that have pre-fit residuals close to rotational phase 0.5 or -0.5 (please use residuals plotter to check this). Some might appear wrapped, i.e., almost one full rotation away from the other TOAs in the same group. In that case TEMPO cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements before and after the problematic TOAs, so that all TOAs in the group are either near 0.5 or -0.5. As an example, I do this in the example timfiles.
 
-* If the residuals are flattened, put an EFAC in your timfile such that the reduced chi2 of the post-fit residuals is ~1.
+* If the post-fit residuals are flattened, put an EFAC in your timfile such that the reduced chi2 of the post-fit residuals is ~1.
 
-* Now, eveything is ready for the solution! TOAs from closely spaced observations can be joined together (``connected") by removing JUMPs from the timfile. Try doing this in the gap between groups of TOAs in nearby epochs, by commenting out two successive JUMP statements and inserting a "PHASE N" (where N is some integer number of phase wraps) between them. Some value of N (maybe 0) will hopefully result in a reduced chi2 ~1. If changing N by +/-1 yields a reduced chi2 that is considerably larger than 1, then N gives you an unambiguous connection, i.e., you have connected that gap. In this case, move to another narrow gap between nearby groups of TOAs and try the same.
+* Now, eveything is ready for the solution! TOAs from closely spaced observations can be joined together (``connected") by removing JUMPs. In the gap between groups of TOAs in nearby epochs, comment out two successive JUMP statements and insert a "PHASE N" (where N is some integer number of phase wraps, which should start with zero) between them, then run tempo. Repeat for integers around N. Hopefully, one of the values of N will result in a reduced chi2 of the post-fit residuals of ~1. In that case, if changing N by +/-1 yields a reduced chi2 that is considerably larger than 1, then N gives you an unambiguous correction to the _rotation number_ predicted by the solution. In this case you have connected that gap!
 
-If your dataset allows it, then you can proceed like this until all TOAs are connected. In that case, you have determined the full phase connection for the pulsar!
+* Move to the next narrow gap between nearby groups of TOAs and repeat the procedure.
 
-If, on the other hand, during the phase connection effort you reach a stage where, for all unconnected gaps between (connected) TOA sets, you have multiple values on N giving acceptable fits, you have only ambiguous gaps left: in this case you cannot proceed with manual connection. Then you need to use one of the scripts below.
+* If your dataset allows it, then you can proceed like this until all TOAs are connected. In that case, you have determined the full phase connection for the pulsar! If you want to use that solution with the original TOAs, please remove all the PHASE statements from your solution, since your new solution already predicts the correct rotation numbers.
+
+If, on the other hand, during the connection effort you reach a stage where, for all unconnected gaps between (connected) TOA sets, you have multiple values on N giving acceptable fits, then you cannot proceed with manual connection. Then you need to use one of the scripts below.
 
 ### First script: sieve.sh
 
