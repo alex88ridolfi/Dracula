@@ -28,7 +28,7 @@ This can be edited easily in your tempo source code. In a file called newval.f, 
 
 Replace the f15.9 with f15.4, and compile tempo. We don't need a very high precision in the reduced chi2, but we need to be able to print very large values.
 
-2) Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. Then edit dracula.sh, as instructed within the script itself. Make it execulable, using
+2) Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. Then edit dracula.sh, as instructed within the script itself and described in details below. Make it execulable, using
 
 > chmod u+x dracula.sh
 
@@ -139,27 +139,29 @@ JUMP
 ...
 
 
-Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed. At the end, you must add a dummy tag, GAP0, also between JUMPs:
+Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed.
+
+At the end, you must add a dummy tag, GAP0, also between JUMPs, which can be commented out:
 
 ...
 
-JUMP
+C JUMP
 
 C GAP0
 
-JUMP
+C JUMP
 
-This is necessary for the scipt to start.
+This is necessary for the script to start.
 
-IMPORTANT: as in sieve.sh, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, or a copy of the first or last TOAs.
+IMPORTANT: as in sieve.sh, and in the manual connection before it, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, or a copy of the first or last TOAs.
 
-After that, enter your TEMPO, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. If you're continuing work from sieve.sh, please change the file with the TOAs, as shown above.
+After that, edit the script itself: enter your TEMPO directory, the parth to the tempo executable, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. Edit too the chi2 threshold for acceptable solutions (bu defult this is 2.0). If you're continuing work from sieve.sh, please change the file with the TOAs, as shown above.
 
 Then, finally, make it run, by simply calling the script!
 
 > ./dracula.sh
 
-The acceptable timing solution(s) will appear in your base working directory as solution_n.m.par, where n and m are two unique integers that tell you in which cycle was the solution found.
+The acceptable timing solution(s) - i.e., those with a reduced chi2 smaller than the threshold you defined in the script - will appear in your base working directory as solution_n.m.par, where n and m are two unique integers that tell you in which cycle was the solution found.
 
 The corresponding file solution_n.m.par lists the rotation numbers and the reduced chi2 of the solutions, in the third column from the end. The last column is the name of the corresponding solution_n.m.par.
 
