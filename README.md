@@ -3,7 +3,7 @@ A pulsar phase connection method
 
 Code written by Paulo Freire. 
 
-Paper with description of concepts is now online: https://arxiv.org/abs/1802.07211.
+See [](https://ui.adsabs.harvard.edu/abs/2018MNRAS.476.4794F) paper with the description of the concept.
 
 Although the example is for an isolated pulsar, the script works for binaries as well. The assumption is that the parameters in the starting solution are actually able to describe the full timing solution. 
 
