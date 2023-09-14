@@ -209,7 +209,7 @@ Updates and instructions by Paulo Freire, based on initial description by Erik M
 
 - Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
 
-- Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 flag.
+- Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 tag, which the user does not need to know about.
  
 ### Pulsars that have been connected with sieve.sh and dracula.sh (in refereed literature, more unpublished):
 
