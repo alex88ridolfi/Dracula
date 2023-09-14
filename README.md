@@ -141,19 +141,7 @@ JUMP
 ...
 
 
-Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed.
-
-At the end, you must add a dummy tag, GAP0, also between JUMPs, which in this case can (should) be commented out:
-
-...
-
-C JUMP
-
-C GAP0
-
-C JUMP
-
-This is necessary for the script to start.
+Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, as in the example above, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed.
 
 IMPORTANT: as in sieve.sh, and in the manual connection before it, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, a copy of the first or last TOAs, or a particulra data set that is too different from the others to allow phase connection.
 
@@ -177,7 +165,7 @@ The improvement of dracula relative to sieve.sh was already described in Freire 
 
 The dracula.sh routine is superior to sieve.sh, and should preferably be used:
 - The writing is simpler, more transparent, and overall the script is easier to follow. Part of this is because of the improved logic, and in particular the use of trial.tim as an intermediate file, and the use of gaps.txt as a support file.
-- As noted before, it is automatic, very little manual intervention is needed. For each solution, the script not only changes the C GAPX into PHASE +N statements, but it also comments out the JUMP statements around it as required by the partial solution being examined. For this, the use of the intermediate file (trial.tim) is very useful. 
+- As noted before, it is automatic, very little manual intervention is needed. For each solution, the script not only changes the C GAPX into PHASE +N statements, but it also comments out the JUMP statements around it as required by the partial solution being examined. For this, the use of the intermediate file (trial.tim) is very useful.
 - However, the more important improvement, which is pretty fundamental, is to always prioritize the partial solutions with the lowest reduced chi2, no matter how many gaps they connect. This means that we always get to the timing solution faster (and sometimes _much_ faster) than with sieve.sh, where we must calculate all solutions for each new gap first before moving to the next gap.
 
 Indeed, if you run this script with 47TucAA.tim and 47TucAA.par, you should see the solution emerge in the 46th cycle (i.e., resulting from the processing of the 45th partial solution for which it tries to connect one extra gap), not after more than 400 cycles.
@@ -220,6 +208,8 @@ Updates and instructions by Paulo Freire, based on initial description by Erik M
 - July 29 2021: By popular request, I posted TEMPO patch that allows it to print very large values of reduced chi2 (see below in the first stage of the instructions). IMPORTANT: YOU NEED TO DO THIS CHANGE IN ORDER FOR THE EXAMPLE BELOW TO WORK!
 
 - Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
+
+- Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 flag.
  
 ### Pulsars that have been connected with sieve.sh and dracula.sh (in refereed literature, more unpublished):
 
