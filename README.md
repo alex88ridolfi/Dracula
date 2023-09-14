@@ -32,15 +32,23 @@ Replace the f15.9 with f15.4, and compile tempo. We don't need a very high preci
 
 > chmod u+x dracula.sh
 
+then, run it!
+
+> ./dracula.sh
+
+The solution of 47 Tuc AA should appear at the 52nd iteration.
+
+The following steps have to do with preparing the file with the TOAs and initial solution of the pulsar you want to solve.
+
 3) Preparation of solution and TOA file: try finding the timing solution manually!
 
-* You should have an initial ephemeris (parfile) and set of TOAs (timfile), preferably all produced with the same profile for each back-end/telescope. The files 47TucAA.tim and 47TucAA.par are examples of this, which you can run to test the script. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
+* You should have an initial ephemeris (parfile) and set of TOAs (timfile), preferably all produced with the same profile for each back-end/telescope. The files 47TucAA.tim and 47TucAA.par are examples of the format these should have. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
   
 * In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par). This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
 
-* In the timfile: Place JUMPs around the sets of TOAs from individual observations, except one. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
+* In the timfile: Place JUMPs around the sets of TOAs from individual observations, except one, as in 47TucAA.tim. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
 
-* If not, please beware of groups of TOAs that have pre-fit residuals close to rotational phase 0.5 or -0.5 (please use residuals plotter to check this). Some might appear wrapped, i.e., almost one full rotation away from the other TOAs in the same group. In that case TEMPO cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements before and after the problematic TOAs, so that all TOAs in the group are either near 0.5 or -0.5. As an example, I do this in the example timfiles.
+* If not, please beware of groups of TOAs that have pre-fit residuals close to rotational phase 0.5 or -0.5 (please use residuals plotter to check this). Some might appear wrapped, i.e., almost one full rotation away from the other TOAs in the same group. In that case TEMPO cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements before and after the problematic TOAs, so that all TOAs in the group are either near 0.5 or -0.5. There is an example of this in 47TucAA.tim.
 
 * If the post-fit residuals are flattened, put an EFAC in your timfile such that the reduced chi2 of the post-fit residuals is ~1.
 
