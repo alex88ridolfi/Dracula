@@ -37,7 +37,16 @@ address=pfreire@mpifr-bonn.mpg.de
 
 # Remove solutions from previous runs (necessary to avoid confusion)
 
-rm -rf solution* list_solutions.dat
+rm -rf solution* gaps.txt list_solutions.dat
+
+# Edit the .tim file with GAP0, if necessary
+
+n=`grep GAP0 $timfile | wc -l`
+
+if [ "$n" -eq "0" ]
+  then
+    echo "\nC JUMP\n\nC GAP0\n\nC JUMP" >> $timfile 
+  fi
 
 # Let's see about acc_WRAPs.dat
 
@@ -61,7 +70,7 @@ if [ "$n" -eq "0" ]
 
 echo
 
-sleep 5;
+sleep 2;
 
 # Make sorted file with list of gaps
 grep GAP $timfile | awk '{print $2}' | sort > gaps.txt
