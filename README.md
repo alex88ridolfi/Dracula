@@ -38,9 +38,7 @@ then, run it!
 
 The solution of 47 Tuc AA should appear at the 52nd iteration.
 
-The following steps have to do with preparing the file with the TOAs and initial solution of the pulsar you want to solve.
-
-3) Preparation of solution and TOA file: try finding the timing solution manually!
+The following steps have to do with preparing the file with the TOAs and initial solution of the pulsar you want to solve. One should also try finding the timing solution manually!
 
 * You should have an initial ephemeris (parfile) and set of TOAs (timfile), preferably all produced with the same profile for each back-end/telescope. The files 47TucAA.tim and 47TucAA.par are examples of the format these should have. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
   
