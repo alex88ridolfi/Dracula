@@ -188,12 +188,10 @@ Some notes about the usage of dracula.sh (and some exercises you can do with 47T
 * For sieve. sh there is some manual intervention in this process (editing in the PHASEA, PHASEB,... statements in the TOA list, editing the labels in sieve.sh). 
 This issue is avoided by the use of the dracula.sh script, unless one chooses to use it as sieve.sh, by naming more and more gaps.
 
-* Even without taking into account the rotation files, tempo still wastes a lot of time repeating many steps, like consulting the Earth rotation tables, solar system ephemerides, etc, until we get to the stage where we have the precise vectors between the telescope at the time of the TOA and the Solar System Barycentre. All of that should ideally run once. My next step will be to use PINT to do these calculations separately, or find a way of making reliable barycentric TOAs, and work with those.
+* Even without taking into account the clock correction files, tempo still wastes a lot of time repeating many other steps, like consulting the Earth rotation tables, solar system ephemerides, etc, until we get to the stage where we have the precise vectors between the telescope at the time of the TOA and the Solar System Barycentre. All of that should ideally run once. My next step will be to use PINT to do these calculations separately, or find a way of making reliable barycentric TOAs, and work with those.
 
 * (Erik Madsen): Personally, I'd have written it in Python, but to each their own!
 (Paulo Freire): why use python when very simple shell commands do so well??
-
-Updates and instructions by Paulo Freire, based on initial description by Erik Madsen.
 
 ### Updates
 
@@ -213,7 +211,7 @@ Updates and instructions by Paulo Freire, based on initial description by Erik M
 
 - Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
 
-- Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 tag, which the user does not need to know about.
+- Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 tag, which the user does not need to know about. Updated the description.
  
 ### Pulsars that have been connected with sieve.sh and dracula.sh (in refereed literature, more unpublished):
 
