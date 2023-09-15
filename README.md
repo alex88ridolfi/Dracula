@@ -44,7 +44,7 @@ The following steps have to do with preparing the file with the TOAs and initial
   
 * In the parfile (optional): replace what you have after the CLOCK statement by UNCORR (see file 47TucAA.par). This will speed up the calculations by more than one order of magnitude, because most of the work of TEMPO is actually calculating and applying the clock corrections. You will lose a bit of precision, but this should not be problematic provided the clock corrections are small relative to your timing precision. 
 
-* In the timfile: Place JUMPs around the sets of TOAs from individual observations, except one, as in 47TucAA.tim. If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
+* In the timfile: Place JUMPs around the sets of TOAs from individual observations, _except one_, as in 47TucAA.tim (leaving at least one TOA outside the JUMPs is very important, no matter what script you use). If your initial parfile is reasonable, you should be able to run TEMPO on this and get pretty flat residuals.
 
 * If not, please beware of groups of TOAs that have pre-fit residuals close to rotational phase 0.5 or -0.5 (please use residuals plotter to check this). Some might appear wrapped, i.e., almost one full rotation away from the other TOAs in the same group. In that case TEMPO cannot converge on an accurate solution. This can be fixed by using PHASE +1 or PHASE -1 statements before and after the problematic TOAs, so that all TOAs in the group are either near 0.5 or -0.5. There is an example of this in 47TucAA.tim.
 
@@ -149,9 +149,7 @@ JUMP
 
 Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, as in the example above, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed.
 
-IMPORTANT: as in sieve.sh, and in the manual connection before it, it is important that at least one TOA is outside the JUMP statements. This acts a phase reference for the fit, which won't be stable if you don't have at least one TOA outside the groups bracketed with JUMPs (which are the ones you can connect). This can be a fake TOA, a copy of the first or last TOAs, or a particulra data set that is too different from the others to allow phase connection.
-
-After that, edit the script itself: enter your TEMPO directory, the parth to the tempo executable, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. Edit too the chi2 threshold for acceptable solutions (bu defult this is 2.0). If you're continuing work from sieve.sh, please change the file with the TOAs, as shown above.
+After that, edit the dracula.sh script itself: enter your $TEMPO directory, the path to the tempo executable, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. Edit too the chi2 threshold for acceptable solutions (by defult this is 2.0). If you're continuing work from sieve.sh, please change the file with the TOAs, as described above.
 
 Then, finally, make it run, by simply calling the script!
 
