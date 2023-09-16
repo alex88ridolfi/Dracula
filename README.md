@@ -207,7 +207,7 @@ This issue is avoided by the use of the dracula.sh script, unless one chooses to
 
 - March 2 2021: Added list of published pulsars that have been connected using this software (see at the end).
 
-- July 29 2021: By popular request, I posted TEMPO patch that allows it to print very large values of reduced chi2 (see below in the first stage of the instructions). IMPORTANT: YOU NEED TO DO THIS CHANGE IN ORDER FOR THE EXAMPLE BELOW TO WORK!
+- July 29 2021: By popular request, I posted TEMPO patch that allows it to print very large values of reduced chi2 (see on top, in the first stage of the instructions). IMPORTANT: YOU NEED TO DO THIS CHANGE IN ORDER FOR THE EXAMPLE FILES TO WORK!
 
 - Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
 
