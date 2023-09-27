@@ -36,7 +36,7 @@ then, run it!
 
 > ./dracula.sh
 
-The solution of 47 Tuc AA should appear at the 53rd iteration.
+The solution of 47 Tuc AA should appear at the 52nd iteration.
 
 The following steps have to do with preparing the file with the TOAs and initial solution of the pulsar you want to solve. As part of this, you might be able to find the timing solution manually! If not, you will at least gain a better understanding of how the scripts work.
 
@@ -172,13 +172,12 @@ The dracula.sh routine is superior to sieve.sh, and should preferably be used:
 - As noted before, it is automatic, very little manual intervention is needed. For each solution, the script not only changes the C GAPX into PHASE +N statements, but it also comments out the JUMP statements around it as required by the partial solution being examined. For this, the use of the intermediate file (trial.tim) is very useful.
 - The previous changes allow for the more important improvement: always prioritize the partial solutions with the lowest reduced chi2, no matter how many gaps they connect. This means that we always get to the timing solution faster (and sometimes _much_ faster) than with sieve.sh, where we must calculate all solutions for each new gap first before moving to the next gap.
 
-Indeed, if you run this script with 47TucAA.tim and 47TucAA.par, you should see the solution emerge in the 53rd cycle (i.e., resulting from the processing of the 45th partial solution for which it tries to connect one extra gap), not after more than 400 cycles.
+Indeed, if you run this script with 47TucAA.tim and 47TucAA.par, you should see the solution emerge in the 52nd iteration, not after more than 400 interations.
 
 Some notes about the usage of dracula.sh (and some exercises you can do with 47TucAA.tim, to improve familiarity with the script):
 - Note that after determining the solution, the script will keep running. This will determine whether the solution reported is unique or not. In the case of 47 Tuc AA, this is the case.
 - You don't need to tag all the gaps between TOAs in advance, just enough that you think you might get a unique solution. The file 47TucAA.tim is an example of this. After finding the unique solution for 47 Tuc AA, you can keep connecting manually (i.e., by editing PHASE +N statements for each additional gap betwen TOA groups) in order to verify that the connection is now unambiguous for all the remaining gaps, and chek whether it stays within your reduced chi2 limit or not - and if not, whether fitting any additional parameters helps.
   If you start this manual work with the post-fit solution(s) that appears in $basedir with the name solution_n.m.par, then all previously connected gap tags and JUMP statements around them have to be deleted (or commented out) in the .tim file, because those rotation numbers are already taken into account by solution_n.m.par. One of the advantages of this is that if you set NITS to 1 in that solution, you can see the pre-fit residuals for all TOAs. This gives you a good idea of how good that solution really is at predicting TOAs. Also, starting from this new solution results in much smaller PHASE numbers for all remaining gaps. In the case of 47TucAA.tim, those should all be 0.
-
 - If dracula returns more than 1 full solution, then that means you need to tag additional gaps between TOA groups, with later letters than those used in the previous gap names. Then continue the computation by calling the script again. This will automatically use the acc_WRAPs.dat that now contains the solution(s) found from previous work.
 - You can also do this to check automatically that the solution you obtained, even if unique, stays in fact unique (or within your chi2 threshold) for the remainder of the gaps. Try doing this with 47TucAA.tim.
 - This means that, if you choose to do so, you can use dracula.sh as you use sieve.sh: by tagging new gaps progressively (you choose how many at a time), and retaining the file with the solutions for those gaps (acc_WRAPs.dat) as a starting point for the subsequent calculations.
