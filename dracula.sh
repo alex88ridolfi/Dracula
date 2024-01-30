@@ -34,14 +34,35 @@ address=pfreire@mpifr-bonn.mpg.de
 #                In that case, just make one containing 3 zeros in a line.
 
 ##########################  YOU SHOULD NOT NEED TO EDIT BEYOND THIS LINE  ########################## 
-
-
 # Function to calculate chi2 for a given rotation number for the last gap 
 calculate_chi2() {
     sed 's/C '$ex_to_replace'/PHASE '$1'/g' trial.tim > trial_new.tim
     tempo trial_new.tim -f $ephem -w > /dev/null
     t=$(expr $t + 1)
     cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'
+}
+
+# Procedure to process solutions with good chi2
+process_solution() {
+
+    # If chi2 is smaller than the threshold, process the solution
+    if [ "$chi" -eq 1 ]; then
+        # If the number of gaps connected by the new solution is the same as the number of gaps, notify the user of the solution
+        if [ "$i" -eq "$n_gaps" ]; then
+            echo Full solution found! $acc_combination, $z : chi2 = $chi2
+            echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
+            cp $rephem $basedir/solution_$l.$z.par
+            # Let the user know a solution has been found
+            cat $rephem | mail -s "Solution found" $address
+            s=$(expr $s + 1)
+        else
+            # If the number of connections is smaller, write the solution to WRAPs.dat
+            echo Found $acc_combination, $z : chi2 = $chi2
+            echo $acc_combination $z $chi2 $chi2_prev >> WRAPs.dat
+        fi
+    else
+        echo "chi2 too large"
+    fi
 }
 
 # Remove solutions from previous runs (necessary to avoid confusion)
@@ -234,33 +255,15 @@ do
 	min=`echo 'scale=0 ; ( '$z2'^2 *('$chi2_0' - '$chi2_1') + '$z1'^2*(-'$chi2_0' + '$chi2_2')) / (2.*('$z2'*('$chi2_0' - '$chi2_1') + '$z1'*(-'$chi2_0' + '$chi2_2'))) / 1.0 ' | bc -l`
 	
 	# Now, let's calculate the chi2 for the best (minimum) phase
+
 	z=$min
+        # Calculate chi2 for this Z 	
         chi2=$(calculate_chi2 $z)	
-	
-	# Comparison between two real numbers
-	chi=`echo $chi2' < '$chi2_threshold | bc -l`
-	
-	# If chi2 is smaller than threshold, write to WRAPs.dat
-	if [ "$chi" -eq "1" ]
-	then
-	    # If the number of gaps connected by new solution is the same as the number of gaps, then notify user of the solution
-	    if [ "$i" -eq "$n_gaps" ]
-	    then
-		echo Full solution found! $acc_combination, $z : chi2 = $chi2
-		echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$min.dat
-		cp $rephem $basedir/solution_$l.$z.par
-		# Let user know a solution has been found
-		cat $rephem | mail -s "Solution found" $address
-		s=`expr $s + 1`
-	    else
-		# If number of connections is smaller, then just write solution to WRAPs.dat
-		echo Found $acc_combination, $z : chi2 = $chi2
-		echo $acc_combination $z $chi2 $chi2_prev >> WRAPs.dat
-	    fi
-        else
-	    echo "chi2 too large"
-        fi
-	
+        # See if it smaller than the threshold	
+	chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
+	# If so, process solution
+        process_solution
+
 	# **************** Do cycle going up in phase count
 	
 	z=`expr $min + 1`
@@ -268,64 +271,21 @@ do
 	while [ "$chi" -eq 1 ]
 	do 
 	    chi2=$(calculate_chi2 $z) 
-	    # comparison between two real numbers
-	    chi=`echo $chi2' < '$chi2_threshold | bc -l` 
-	    
-	    # If chi2 is smaller than threshold, write to WRAPs.dat
-	    if [ "$chi" -eq "1" ]
-	    then
-		# If the number of gaps connected by new solution is the same as the number of gaps, then notify user of the solution
-		if [ "$i" -eq "$n_gaps" ]
-		then
-		    echo Full solution found! $acc_combination, $z : chi2 = $chi2
-		    echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
-		    cp $rephem $basedir/solution_$l.$z.par
-		    # Let user know a solution has been found
-		    cat $rephem | mail -s "Solution found" $address
-		    s=`expr $s + 1`
-		else
-		    # If number of connections is smaller, then just write solution to WRAPs.dat
-		    echo Found $acc_combination, $z : chi2 = $chi2
-		    echo $acc_combination $z $chi2 $chi2_prev >> WRAPs.dat
-		fi			
-	    else
-		echo "chi2 too large"
-	    fi   
+	    chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
+	    process_solution
 	    z=`expr $z + 1`
 	done
 	
-	# **************** Do same cycle going down in phase count
+	# **************** Do cycle going down in phase count
 	
 	z=`expr $min - 1`
 	chi=1   
 	while [ "$chi" -eq 1 ]
 	do	 
 	    chi2=$(calculate_chi2 $z)
- 
-	    # Comparison between two real numbers
-	    chi=`echo $chi2' < '$chi2_threshold | bc -l`
-	    
-	    # If chi2 is smaller than threshold, write to WRAPs.dat
-	    if [ "$chi" -eq "1" ]
-	    then
-		# If the number of gaps connected by new solution is the same as the number of gaps, then notify user of the solution
-		if [ "$i" -eq "$n_gaps" ]
-		then
-		    echo Full solution found! $acc_combination, $z : chi2 = $chi2
-		    echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$z.dat
-		    cp $rephem $basedir/solution_$l.$z.par
-		    # Let user know a solution has been found
-		    cat $rephem | mail -s "Solution found" $address
-		    s=`expr $s + 1`
-		else
-		    # If number of connections is smaller, then just write solution to WRAPs.dat
-		    echo Found $acc_combination, $z : chi2 = $chi2
-		    echo $acc_combination $z $chi2 $chi2_prev >> WRAPs.dat
-		fi			
-	    else
-		echo "chi2 too large"
-	    fi
-	    z=`expr $z - 1`
+	    chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
+	    process_solution 
+            z=`expr $z - 1`
 	done	
     done
     
@@ -367,8 +327,7 @@ awk '{NF--; print}' list_solutions.dat > acc_WRAPs.dat
 
 # Make list of solutions with pointers to solutions written
 
-# cd report on what's been done
-
+# Last, report on what's been done
 
 echo Made a total of $t trials
 echo Of those, a total of $l unique solutions had reduced chi2s smaller than $chi2_threshold,
@@ -378,4 +337,3 @@ echo Started $start
 echo Ended $end
 
 exit
-
