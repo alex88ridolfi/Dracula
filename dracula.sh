@@ -30,9 +30,6 @@ rephem=J0024-7205AA.par
 # ***** Finally: Edit your mail address here (please change this, otherwise I'll be getting e-mails with your solutions)
 address=pfreire@mpifr-bonn.mpg.de
 
-# ***** WARNING: To start, you must have a file called acc_WRAPs.dat. If you don't, that means you're starting from scratch.
-#                In that case, just make one containing 3 zeros in a line.
-
 ##########################  YOU SHOULD NOT NEED TO EDIT BEYOND THIS LINE  ########################## 
 
 # Function to calculate chi2 for a given rotation number for the last gap 
@@ -75,7 +72,6 @@ rm -rf solution* list_solutions.dat
 n=`ls acc_WRAPs.dat | wc -l`
 
 echo
-
 if [ "$n" -eq "0" ]
   then
      rm -rf acc_WRAPs.dat
@@ -83,14 +79,13 @@ if [ "$n" -eq "0" ]
      echo "Starting from scratch!"
   else
      echo "Starting from pre-existing list of solutions."
-     echo "This only works if you have named additional gaps in the previous timfile with GAP tags"
+     echo "This only works if you are continuing previously interrupted work"
+     echo "or if you have named additional gaps in the previous timfile with GAP tags"
      echo "(for current list of tags, see file gaps.txt)."
-     echo "If you changed your time file significantly, or have changed the positions of the tags, this won't work either, and you should start from scratch."
+     echo "If you changed your time file significantly, or have changed the positions of the tags, this won't work, and you should start from scratch."
      echo "If you want to start from scratch, stop script and delete file acc_WRAPs.dat"
   fi
-
 echo
-
 sleep 5;
 
 # Make sorted file with list of gaps
@@ -255,7 +250,6 @@ do
 	min=`echo 'scale=0 ; ( '$z2'^2 *('$chi2_0' - '$chi2_1') + '$z1'^2*(-'$chi2_0' + '$chi2_2')) / (2.*('$z2'*('$chi2_0' - '$chi2_1') + '$z1'*(-'$chi2_0' + '$chi2_2'))) / 1.0 ' | bc -l`
 	
 	# Now, let's calculate the chi2 for the best (minimum) phase
-
 	z=$min
         # Calculate chi2 for this Z 	
         chi2=$(calculate_chi2 $z)	
@@ -265,7 +259,6 @@ do
         process_solution
 
 	# **************** Do cycle going up in phase count
-	
 	z=`expr $min + 1`
 	chi=1
 	while [ "$chi" -eq 1 ]
@@ -277,7 +270,6 @@ do
 	done
 	
 	# **************** Do cycle going down in phase count
-	
 	z=`expr $min - 1`
 	chi=1   
 	while [ "$chi" -eq 1 ]
@@ -293,7 +285,6 @@ do
     # This is done by sorting on the penultimate column, which has the chi2 from the previous work
 
     awk '{print $(NF-1)" "$0}' WRAPs.dat | sort -n | cut -f2- -d' '  > acc_WRAPs.dat
-
     echo Did the sort.
 
     # The file is built by sorting WRAPs.dat, which has the partial solutions not processed in the previous loop,
