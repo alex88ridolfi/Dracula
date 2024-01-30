@@ -35,18 +35,18 @@ address=pfreire@mpifr-bonn.mpg.de
 
 ##########################  YOU SHOULD NOT NEED TO EDIT BEYOND THIS LINE  ########################## 
 
+
+# Function to calculate chi2 for a given rotation number for the last gap 
+calculate_chi2() {
+    sed 's/C '$ex_to_replace'/PHASE '$1'/g' trial.tim > trial_new.tim
+    tempo trial_new.tim -f $ephem -w > /dev/null
+    t=$(expr $t + 1)
+    cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'
+}
+
 # Remove solutions from previous runs (necessary to avoid confusion)
 
-rm -rf solution* gaps.txt list_solutions.dat
-
-# Edit the .tim file with GAP0, if necessary
-
-n=`grep GAP0 $timfile | wc -l`
-
-if [ "$n" -eq "0" ]
-  then
-    echo "\nC JUMP\n\nC GAP0\n\nC JUMP" >> $timfile 
-  fi
+rm -rf solution* list_solutions.dat
 
 # Let's see about acc_WRAPs.dat
 
@@ -70,7 +70,7 @@ if [ "$n" -eq "0" ]
 
 echo
 
-sleep 2;
+sleep 5;
 
 # Make sorted file with list of gaps
 grep GAP $timfile | awk '{print $2}' | sort > gaps.txt
@@ -220,33 +220,22 @@ do
 	# First, we will test the new gap in 3 points (0, +z, -z). From these three chi2s, we will derive the positions for the best solutions
 	
 	# ***** Now, calculate the chi2 for PHASE +0
-	sed 's/C '$ex_to_replace'/PHASE 0/g' trial.tim > trial_new.tim
-	tempo trial_new.tim -f $ephem -w > /dev/null
-	t=`expr $t + 1`
-	chi2_0=`cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'`
+
+        chi2_0=$(calculate_chi2 0)
 	
 	# Do the same for PHASE $z1
-	sed 's/C '$ex_to_replace'/PHASE '$z1'/g' trial.tim > trial_new.tim	
-	tempo trial_new.tim -f $ephem -w > /dev/null 
-	t=`expr $t + 1`
-	chi2_1=`cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'`
+        chi2_1=$(calculate_chi2 $z1)
 	
 	# Do the same for PHASE $z2
-	sed 's/C '$ex_to_replace'/PHASE '$z2'/g' trial.tim > trial_new.tim	
-	tempo trial_new.tim -f $ephem -w > /dev/null
-	t=`expr $t + 1`
-	chi2_2=`cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'`
+	chi2_2=$(calculate_chi2 $z2)
 	
 	# determine position of minimum (this should be reasonably accurate) by estimating minimum of parabola defined by 0, z1, z2
 	
 	min=`echo 'scale=0 ; ( '$z2'^2 *('$chi2_0' - '$chi2_1') + '$z1'^2*(-'$chi2_0' + '$chi2_2')) / (2.*('$z2'*('$chi2_0' - '$chi2_1') + '$z1'*(-'$chi2_0' + '$chi2_2'))) / 1.0 ' | bc -l`
 	
 	# Now, let's calculate the chi2 for the best (minimum) phase
-	
-	sed 's/C '$ex_to_replace'/PHASE '$min'/g' trial.tim > trial_new.tim
-        tempo trial_new.tim -f $ephem -w > /dev/null 
-	t=`expr $t + 1`
-        chi2=`cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'`
+	z=$min
+        chi2=$(calculate_chi2 $z)	
 	
 	# Comparison between two real numbers
 	chi=`echo $chi2' < '$chi2_threshold | bc -l`
@@ -257,16 +246,16 @@ do
 	    # If the number of gaps connected by new solution is the same as the number of gaps, then notify user of the solution
 	    if [ "$i" -eq "$n_gaps" ]
 	    then
-		echo Full solution found! $acc_combination, $min : chi2 = $chi2
-		echo $acc_combination $min $chi2 $chi2_prev solution_$l.$min.par > $basedir/solution_$l.$min.dat
-		cp $rephem $basedir/solution_$l.$min.par
+		echo Full solution found! $acc_combination, $z : chi2 = $chi2
+		echo $acc_combination $z $chi2 $chi2_prev solution_$l.$z.par > $basedir/solution_$l.$min.dat
+		cp $rephem $basedir/solution_$l.$z.par
 		# Let user know a solution has been found
 		cat $rephem | mail -s "Solution found" $address
 		s=`expr $s + 1`
 	    else
 		# If number of connections is smaller, then just write solution to WRAPs.dat
-		echo Found $acc_combination, $min : chi2 = $chi2
-		echo $acc_combination $min $chi2 $chi2_prev >> WRAPs.dat
+		echo Found $acc_combination, $z : chi2 = $chi2
+		echo $acc_combination $z $chi2 $chi2_prev >> WRAPs.dat
 	    fi
         else
 	    echo "chi2 too large"
@@ -278,11 +267,7 @@ do
 	chi=1
 	while [ "$chi" -eq 1 ]
 	do 
-	    sed 's/C '$ex_to_replace'/PHASE '$z'/g' trial.tim > trial_new.tim	    
-	    tempo trial_new.tim -f $ephem -w > /dev/null
-	    t=`expr $t + 1`
-	    chi2=`cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'`
-	    
+	    chi2=$(calculate_chi2 $z) 
 	    # comparison between two real numbers
 	    chi=`echo $chi2' < '$chi2_threshold | bc -l` 
 	    
@@ -309,17 +294,14 @@ do
 	    z=`expr $z + 1`
 	done
 	
-	# **************** Do cycle going down in phase count
+	# **************** Do same cycle going down in phase count
 	
 	z=`expr $min - 1`
 	chi=1   
 	while [ "$chi" -eq 1 ]
 	do	 
-	    sed 's/C '$ex_to_replace'/PHASE '$z'/g' trial.tim > trial_new.tim	    
-	    tempo trial_new.tim -f $ephem -w > /dev/null
-	    t=`expr $t + 1`
-	    chi2=`cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'`
-	    
+	    chi2=$(calculate_chi2 $z)
+ 
 	    # Comparison between two real numbers
 	    chi=`echo $chi2' < '$chi2_threshold | bc -l`
 	    
@@ -396,3 +378,4 @@ echo Started $start
 echo Ended $end
 
 exit
+
