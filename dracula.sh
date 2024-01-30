@@ -34,6 +34,7 @@ address=pfreire@mpifr-bonn.mpg.de
 #                In that case, just make one containing 3 zeros in a line.
 
 ##########################  YOU SHOULD NOT NEED TO EDIT BEYOND THIS LINE  ########################## 
+
 # Function to calculate chi2 for a given rotation number for the last gap 
 calculate_chi2() {
     sed 's/C '$ex_to_replace'/PHASE '$1'/g' trial.tim > trial_new.tim
@@ -44,7 +45,6 @@ calculate_chi2() {
 
 # Procedure to process solutions with good chi2
 process_solution() {
-
     # If chi2 is smaller than the threshold, process the solution
     if [ "$chi" -eq 1 ]; then
         # If the number of gaps connected by the new solution is the same as the number of gaps, notify the user of the solution
