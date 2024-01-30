@@ -28,6 +28,8 @@ This can be edited easily in your tempo source code. In a file called newval.f, 
 
 Replace the f15.9 with f15.4, and compile tempo. We don't need a very high precision in the reduced chi2, but we need to be able to print very large values.
 
+Make sure that the newer compiled version (which might appear within /src/) replaces your default tempo executable!
+
 2) Download dracula.sh, 47TucAA.tim and 47TucAA.par into a directory. Then edit dracula.sh, as instructed within the script itself and described in details below. Make it execulable, using
 
 > chmod u+x dracula.sh
@@ -214,6 +216,8 @@ This issue is avoided by the use of the dracula.sh script, unless one chooses to
 - Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
 
 - Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 tag, which the user does not need to know about. Updated the description.
+
+- Jan. 30 2024: simplified and cleaned the script by defining functions and procedures. Thanks, Chatgpt!
  
 ### Pulsars that have been connected with sieve.sh and dracula.sh (in refereed literature, more unpublished):
 
