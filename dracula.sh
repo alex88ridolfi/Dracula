@@ -42,7 +42,10 @@ calculate_chi2() {
 
 # Procedure to process solutions with good chi2
 process_solution() {
-    # If chi2 is smaller than the threshold, process the solution
+    # See if the chi2 is smaller than the threshold  
+        chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
+
+    # If so, process the solution
     if [ "$chi" -eq 1 ]; then
         # If the number of gaps connected by the new solution is the same as the number of gaps, notify the user of the solution
         if [ "$i" -eq "$n_gaps" ]; then
@@ -148,7 +151,7 @@ do
 
     kc=0
 
-    # *****  decapitate acc_WRAPs.dat by k, so that the first k combinations are not processed again
+    # decapitate acc_WRAPs.dat by k, so that the first k combinations are not processed again
     tail -n +$k2 acc_WRAPs.dat > WRAPs.dat
 
     # make smaller file with first k lines
@@ -162,7 +165,7 @@ do
 	kc=`expr $kc + 1`
 	l=`expr $l + 1`
 
-	# ***** First step: read the first line, the one with the lowest chi2
+	# First step: read the first line, the one with the lowest chi2
 	head -$kc top_acc_WRAPs.dat | tail -1 > line_complete.txt
 	
 	# Take out two last values to make list with phase numbers only
@@ -171,7 +174,7 @@ do
 	# Store this in an env. variable
 	acc_combination=`cat line.txt`
 		
-	# *****  Third step: see how long it is.
+	# Third step: see how long it is.
 	length=`wc line.txt | awk '{print $2}'`
 	# add 1, because we start counter below at 1*/
 	length=`expr $length + 1`
@@ -181,7 +184,7 @@ do
 
 	echo Iteration $l, $kc: processing solution $acc_combination, with chi2 = $chi2_prev
 	
-	# *****  Fourth step: a loop, dictated by the number above, where we replace PHASEA with PHASE +l, and replace the JUMP statements above and below by nothing
+	# Fourth step: a loop, dictated by the number above, where we replace PHASEA with PHASE +l, and replace the JUMP statements above and below by nothing
 	
 	# We must start with a clean slate: a trial.tim file that still has all the JUMPs uncommented, and all the PHASEA statements commented
 	cp $timfile trial.tim
@@ -235,8 +238,7 @@ do
 	
 	# First, we will test the new gap in 3 points (0, +z, -z). From these three chi2s, we will derive the positions for the best solutions
 	
-	# ***** Now, calculate the chi2 for PHASE +0
-
+	# Now, calculate the chi2 for PHASE +0
         chi2_0=$(calculate_chi2 0)
 	
 	# Do the same for PHASE $z1
@@ -246,36 +248,31 @@ do
 	chi2_2=$(calculate_chi2 $z2)
 	
 	# determine position of minimum (this should be reasonably accurate) by estimating minimum of parabola defined by 0, z1, z2
-	
 	min=`echo 'scale=0 ; ( '$z2'^2 *('$chi2_0' - '$chi2_1') + '$z1'^2*(-'$chi2_0' + '$chi2_2')) / (2.*('$z2'*('$chi2_0' - '$chi2_1') + '$z1'*(-'$chi2_0' + '$chi2_2'))) / 1.0 ' | bc -l`
 	
 	# Now, let's calculate the chi2 for the best (minimum) phase
 	z=$min
         # Calculate chi2 for this Z 	
         chi2=$(calculate_chi2 $z)	
-        # See if it smaller than the threshold	
-	chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
-	# If so, process solution
+	# Check if chi2 is good, if so then process solution
         process_solution
 
-	# **************** Do cycle going up in phase count
+	# Do cycle going up in phase count
 	z=`expr $min + 1`
 	chi=1
 	while [ "$chi" -eq 1 ]
 	do 
 	    chi2=$(calculate_chi2 $z) 
-	    chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
 	    process_solution
 	    z=`expr $z + 1`
 	done
 	
-	# **************** Do cycle going down in phase count
+	# Do cycle going down in phase count
 	z=`expr $min - 1`
 	chi=1   
 	while [ "$chi" -eq 1 ]
 	do	 
 	    chi2=$(calculate_chi2 $z)
-	    chi=$(echo "$chi2 < $chi2_threshold" | bc -l)
 	    process_solution 
             z=`expr $z - 1`
 	done	
