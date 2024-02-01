@@ -236,23 +236,17 @@ do
 	# The trial.tim file is ready. This will be the one we will be repeatedly editing over the next few lines.
 	# This will be done into a new file (trial_new.tim), otherwise confusion will reign.
 	
-	# First, we will test the new gap in 3 points (0, +z, -z). From these three chi2s, we will derive the positions for the best solutions
-	
-	# Now, calculate the chi2 for PHASE +0
+	# First, we will test the new gap in 3 points (0, z1, z2).
         chi2_0=$(calculate_chi2 0)
-	
-	# Do the same for PHASE $z1
         chi2_1=$(calculate_chi2 $z1)
-	
-	# Do the same for PHASE $z2
 	chi2_2=$(calculate_chi2 $z2)
 	
-	# determine position of minimum (this should be reasonably accurate) by estimating minimum of parabola defined by 0, z1, z2
+	# From these values, determine position of minimum (this should be reasonably accurate) by estimating minimum of parabola defined by 0, z1, z2
 	min=`echo 'scale=0 ; ( '$z2'^2 *('$chi2_0' - '$chi2_1') + '$z1'^2*(-'$chi2_0' + '$chi2_2')) / (2.*('$z2'*('$chi2_0' - '$chi2_1') + '$z1'*(-'$chi2_0' + '$chi2_2'))) / 1.0 ' | bc -l`
 	
 	# Now, let's calculate the chi2 for the best (minimum) phase
 	z=$min
-        # Calculate chi2 for this Z 	
+        # Calculate chi2 for this z 	
         chi2=$(calculate_chi2 $z)	
 	# Check if chi2 is good, if so then process solution
         process_solution
