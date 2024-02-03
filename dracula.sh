@@ -66,7 +66,6 @@ process_solution() {
 }
 
 # Remove solutions from previous runs (necessary to avoid confusion)
-
 rm -rf solution* list_solutions.dat
 
 # Let's see about acc_WRAPs.dat
@@ -155,11 +154,9 @@ do
     tail -n +$k2 acc_WRAPs.dat > WRAPs.dat
 
     # make smaller file with first k lines
-
     head -$k acc_WRAPs.dat > top_acc_WRAPs.dat
     
     # Let's now process these k combinations, which are still in acc_WRAPs.dat
-    
     while [ "$kc" -lt "$k" ]
     do
 	kc=`expr $kc + 1`
@@ -274,7 +271,6 @@ do
     
     # re-make acc_WRAPs.dat for next k cycle.
     # This is done by sorting on the penultimate column, which has the chi2 from the previous work
-
     awk '{print $(NF-1)" "$0}' WRAPs.dat | sort -n | cut -f2- -d' '  > acc_WRAPs.dat
     echo Did the sort.
 
@@ -287,8 +283,7 @@ do
 	cp acc_WRAPs.dat $basedir
     fi
 
-    # Update n with number of remaining solutions
-    
+    # Update n with number of remaining solutions  
     n=`wc -l < acc_WRAPs.dat`
 done
 
@@ -300,18 +295,13 @@ cd $basedir
 # Either with extra gap tags in same data set, or with new ones around a new data set. 
 
 # First, we make a sorted list of solution
-
 cat solution_*dat | awk '{print $(NF-2)" "$0}' | sort -n | cut -f2- -d' ' > list_solutions.dat
 
 # Second, chop off the last column to make the new acc_WRAPs.dat
-
 awk '{NF--; print}' list_solutions.dat > acc_WRAPs.dat
 
-# Make list of solutions with pointers to solutions written
-
-# Last, report on what's been done
-
-echo Made a total of $t trials
+# Make list of solutions with pointers to solutions written and report on what's been done
+echo Made a total of $t tempo runs
 echo Of those, a total of $l unique solutions had reduced chi2s smaller than $chi2_threshold,
 echo  which for that were stored and processed further.
 echo Found $s solutions.
