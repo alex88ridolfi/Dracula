@@ -36,7 +36,6 @@ address=pfreire@mpifr-bonn.mpg.de
 calculate_chi2() {
     sed 's/C '$ex_to_replace'/PHASE '$1'/g' trial.tim > trial_new.tim
     tempo trial_new.tim -f $ephem -w > /dev/null
-    t=$(expr $t + 1)
     cat tempo.lis | tail -1 | awk -F= '{print $2}' | awk '{print $1}'
 }
 
@@ -111,8 +110,6 @@ cp acc_WRAPs.dat $rundir
 cd $rundir
 start=`date`
 
-# set the total counter for the number of tempo runs
-t=0
 # set total counter for the number of tempo runs with chi2 better than the margin
 l=0
 # set number of solutions found
@@ -301,7 +298,6 @@ cat solution_*dat | awk '{print $(NF-2)" "$0}' | sort -n | cut -f2- -d' ' > list
 awk '{NF--; print}' list_solutions.dat > acc_WRAPs.dat
 
 # Make list of solutions with pointers to solutions written and report on what's been done
-echo Made a total of $t tempo runs
 echo Of those, a total of $l unique solutions had reduced chi2s smaller than $chi2_threshold,
 echo  which for that were stored and processed further.
 echo Found $s solutions.
