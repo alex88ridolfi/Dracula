@@ -40,6 +40,8 @@ then, run it!
 
 The solution of 47 Tuc AA should appear at the 52nd iteration.
 
+3) Prepare your own timing files
+
 The following steps have to do with preparing the file with the TOAs and initial solution of the pulsar you want to solve. As part of this, you might be able to find the timing solution manually! If not, you will at least gain a better understanding of how the scripts work.
 
 * You should have an initial ephemeris (parfile) and set of TOAs (timfile), preferably all produced with the same profile for each back-end/telescope. The files 47TucAA.tim and 47TucAA.par are examples of the format these should have. In the best case, for each observation, you should have at least 3 TOAs, and the observations should appear preferably ordered in time for each back-end/telescope.
@@ -52,7 +54,7 @@ The following steps have to do with preparing the file with the TOAs and initial
 
 * If the post-fit residuals are flattened, put an EFAC in your timfile such that the reduced chi2 of the post-fit residuals is ~1.
 
-* Now, eveything is ready for the solution! Groups of TOAs from closely spaced observations can now be joined together (``connected"). In the gap between those two groups, comment out two successive JUMP statements and insert a "PHASE N" (where N is some integer number of phase wraps, which should start with zero) between them, then run tempo. Repeat for integers around N. Hopefully, one of the values of N will result in a reduced chi2 of the post-fit residuals of ~1. In that case, if changing N by +/-1 yields a reduced chi2 that is considerably larger than 1, then N gives you an unambiguous correction to the _rotation number_ predicted by the solution. In this case you have connected that gap!
+* Now, eveything is ready for attempting to find the solution! Groups of TOAs from closely spaced observations can now be joined together (``connected"). In the gap between those two groups, comment out two successive JUMP statements and insert a "PHASE N" (where N is some integer number of phase wraps, which should start with zero) between them, then run tempo. Repeat for integers around N. Hopefully, one of the values of N will result in a reduced chi2 of the post-fit residuals of ~1. In that case, if changing N by +/-1 yields a reduced chi2 that is considerably larger than 1, then N gives you an unambiguous correction to the _rotation number_ predicted by the solution. In this case you have connected that gap!
 
 * Leave the PHASE +N statement in the previous gap at its optimal N value (reduced chi2 ~ 1) and move to the next narrow gap between nearby groups of TOAs and repeat the procedure.
 
@@ -148,8 +150,15 @@ JUMP
 
 ...
 
-
 Thus, the gap tags must be commented out, and the JUMPs around it cannot be commented out. Note that the JUMP statements around each GAP statement should be offset by two lines, as in the example above, because that is what the dracula.sh script assumes, so that it can comment them out properly when needed.
+
+* You MUST add, at the end of your .tim file, the following lines:
+
+C JUMP
+
+C GAP0
+
+C JUMP
 
 After that, edit the dracula.sh script itself: enter your $TEMPO directory, the path to the tempo executable, basedir, rundir, timfile, parfile information at the top of the script (as in the sieve.sh script) and e-mail, if you want the solutions to be e-mailed to you and not to me. Edit too the chi2 threshold for acceptable solutions (by defult this is 2.0). If you're continuing work from sieve.sh, please change the file with the TOAs, as described above.
 
@@ -215,7 +224,7 @@ This issue is avoided by the use of the dracula.sh script, unless one chooses to
 
 - Aug. 22 2023: Simplified usage - the user no longer has to worry about file acc_WRAPs.dat, this is handled (mostly) automatically. I now suggest a simple speed-up (by more than an order of magnitude) by editing the CLOCK flag in the parameter file, as in the example file. Also, program now makes a list of solutions (list_solutions.dat), with rotation numbers, chi2's and the corresponding .par files.
 
-- Sept. 14 2023: Corrected bug in what is now line 261. Added automatic handling of the GAP0 tag, which the user does not need to know about. Updated the description.
+- Sept. 14 2023: Corrected bug in what is now line 261.
 
 - Jan. 30 2024: simplified and cleaned the script by defining functions and procedures. Thanks, Chatgpt!
  
