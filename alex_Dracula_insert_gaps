@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+
+import os, sys, glob, copy
+import numpy as np
+
+list_gap_letters=["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+
+
+def import_timfile(timfile_name):
+        timfile = open( timfile_name, "r" )
+        list_timfile = []
+
+        for line in timfile:
+                if line != "\n" and not line.startswith("C "):
+                        list_timfile.append(line.strip())
+
+        return list_timfile
+
+
+if (len(sys.argv) == 1):
+        print()
+        print("USAGE: %s -tim <timfile>" % (os.path.basename(sys.argv[0])))
+        print()
+        exit()
+else:
+        for j in range( 1, len(sys.argv)):
+                if (sys.argv[j] == "-tim"):
+                        timfile = sys.argv[j+1]
+
+
+
+working_dir = os.getcwd()
+
+timfile_basename = os.path.splitext(os.path.basename(timfile))[0]
+timfile_newname = "%s_GAPS.tim" % (timfile_basename)
+
+list_lines_current_timfile = []
+list_lines_new_timfile=[]
+list_lines_current_timfile_complete = import_timfile(timfile)
+
+list_gap_dicts = []
+
+
+flag_first_jump = 0
+
+N_lines = len(list_lines_current_timfile_complete)
+for j in range(N_lines-1):
+        
+        current_line = list_lines_current_timfile_complete[j]
+        next_line = list_lines_current_timfile_complete[j+1]
+        
+        print( current_line )
+        if current_line.strip() == "JUMP":
+
+                if next_line.strip() != "JUMP" and flag_first_jump == 0:
+                        print("First JUMP detected in line [%d]" % (j))
+                        flag_first_jump = 1
+                        TOA_obs_before = np.float64(list_lines_current_timfile_complete[j-1].split()[2])
+                        TOA_obs_after  = np.float64(list_lines_current_timfile_complete[j+1].split()[2])
+                        print("%.20f - %.20f" % (TOA_obs_after, TOA_obs_before))
+                        TOA_gap_size = TOA_obs_after - TOA_obs_before
+                        #list_gap_dicts.append({'gap_size': TOA_gap_size, 'lines_jump': [j, j+1] } )
+                        print(TOA_gap_size)
+
+                elif current_line.strip() == "JUMP" and next_line.strip() == "JUMP":
+                        print("Double JUMP detected in lines [%d-%d]" % (j, j+1))
+                        TOA_obs_before = np.float64(list_lines_current_timfile_complete[j-1].split()[2])
+                        TOA_obs_after  = np.float64(list_lines_current_timfile_complete[j+2].split()[2])
+                        
+                        print("%.20f - %.20f" % (TOA_obs_after, TOA_obs_before))
+                        TOA_gap_size = TOA_obs_after - TOA_obs_before
+                        list_gap_dicts.append({'gap_size': TOA_gap_size, 'lines_jump': [j, j+1] } )
+                        print(TOA_gap_size)
+
+        list_lines_new_timfile.append(current_line)
+
+list_lines_new_timfile.append(list_lines_current_timfile_complete[-1])
+
+
+for k in range(len(list_gap_dicts)):
+        print(list_gap_dicts[k])
+
+
+sorted_list_gap_dicts = sorted(list_gap_dicts, key=lambda d: d['gap_size'])
+
+print("=============================================")
+print("SORTED")
+for k in range(len(sorted_list_gap_dicts)):
+
+        gap_string = "\nC GAP%s\n" % (list_gap_letters[k])
+
+
+        line_num = sorted_list_gap_dicts[k]['lines_jump'][0]
+
+        print("sorted_list_gap_dicts[k] = ", sorted_list_gap_dicts[k])
+        print("sorted_list_gap_dicts[k]['lines_jump'] = ", sorted_list_gap_dicts[k]['lines_jump'])
+        print("sorted_list_gap_dicts[k]['lines_jump'][0] = ", sorted_list_gap_dicts[k]['lines_jump'][0])
+        
+        list_lines_new_timfile[line_num] = "JUMP\n%s" % (gap_string)
+        
+        print("line number: %d --- > %s  --> %s"  % (line_num, gap_string, sorted_list_gap_dicts[k]))
+        print()
+
+
+
+print
+print()
+print("#########################################################")
+with open(timfile_newname, "w") as newfile:
+        for j in range(len(list_lines_new_timfile)):
+                print(list_lines_new_timfile[j])
+                newfile.write("%s\n" % list_lines_new_timfile[j])
+        newfile.write("\n")
+        newfile.write("C JUMP\n")
+        newfile.write("\n")
+        newfile.write("C GAP0\n")
+        newfile.write("\n")
+        newfile.write("C JUMP\n")
+
+print()
+print("TOA file with GAPS inserted written as '%s'" %(timfile_newname))
+        
+
